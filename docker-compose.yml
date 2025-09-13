@@ -1,0 +1,65 @@
+services:
+  forgejo:
+    image: codeberg.org/forgejo/forgejo:12
+    container_name: forgejo
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+    restart: unless-stopped
+    volumes:
+      - forgejo_data:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "3000:3000"
+      - "222:22"
+    networks:
+      - cloudflare_tunnel_net
+
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${VW_DOMAIN}
+    ports:
+      - 9001:9001
+    volumes:
+      - vaultwarden_data:/data/
+    networks:
+      - cloudflare_tunnel_net
+
+  portainer:
+    image: portainer/portainer-ce:2.33.0
+    container_name: portainer
+    restart: unless-stopped
+    ports:
+      - 9000:9000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - cloudflare_tunnel_net
+
+  cloudflare-tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflare-tunnel
+    restart: unless-stopped
+    command: tunnel run --token ${CLOUDFLARE_TOKEN}
+    volumes:
+      - ~/.cloudflared:/etc/cloudflared
+    networks:
+      - cloudflare_tunnel_net
+
+networks:
+  cloudflare_tunnel_net:
+    name: cloudflare_tunnel_net
+    driver: bridge
+
+volumes:
+  portainer_data:
+    name: portainer_data
+  vaultwarden_data:
+    name: vaultwarden_data
+  forgejo_data:
+    name: forgejo_data
