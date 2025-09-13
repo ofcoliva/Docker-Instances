@@ -1,6 +1,10 @@
 # Docker Instances
 
-Neste repositório, você encontrará todas as configurações necessárias para gerenciar suas instâncias Docker de forma eficiente, sem a necessidade de reconfigurar manualmente tudo após descartar as instâncias principais. A configuração inclui o uso do **Cloudflare Tunnel** para expor suas aplicações containerizadas de forma segura.
+Neste repositório, você encontrará todas as configurações necessárias para gerenciar suas instâncias Docker de forma eficiente, sem a necessidade de reconfigurar manualmente tudo após descartar as instâncias principais. A configuração inclui o uso do Cloudflare Tunnel para expor suas aplicações containerizadas de forma segura.
+
+Usando o Cloudflare Tunnel, você pode expor seus contêineres Docker para a internet de forma simples e segura.
+
+Basta configurar o túnel para ouvir em portas específicas. Assim, sempre que você iniciar um novo contêiner remotamente, direcionando a saída para uma dessas portas pré-configuradas, sua aplicação ficará quase que instantaneamente disponível em seu domínio.
 
 ### Observações
 
