@@ -1,4 +1,30 @@
 services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime-kuma
+    restart: unless-stopped
+    ports:
+      - "9003:9003"
+    networks:
+      - cloudflare_tunnel_net
+    volumes:
+      - uptime_kuma_data:/app/data
+    environment:
+      - TZ=UTC-3
+      - UMASK=0022
+      - PORT=9003 # Porta padrão 3001 remapeada internamente no container para 9003
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9003"]
+      interval: 30s
+      retries: 3
+      start_period: 10s
+      timeout: 5s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   forgejo:
     image: codeberg.org/forgejo/forgejo:12
     container_name: forgejo
@@ -11,7 +37,7 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     ports:
-      - "3000:3000"
+      - "9002:3000"
       - "222:22"
     networks:
       - cloudflare_tunnel_net
@@ -23,7 +49,7 @@ services:
     environment:
       DOMAIN: ${VW_DOMAIN}
     ports:
-      - 9001:9001
+      - "9001:9001"
     volumes:
       - vaultwarden_data:/data/
     networks:
@@ -34,7 +60,7 @@ services:
     container_name: portainer
     restart: unless-stopped
     ports:
-      - 9000:9000
+      - "9000:9000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
@@ -63,3 +89,5 @@ volumes:
     name: vaultwarden_data
   forgejo_data:
     name: forgejo_data
+  uptime_kuma_data:
+    name: uptime_kuma_data
