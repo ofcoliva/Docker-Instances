@@ -67,6 +67,20 @@ services:
     networks:
       - cloudflare_tunnel_net
 
+  rclone-sync:
+    image: rclone/rclone:latest
+    container_name: rclone-sync
+    restart: unless-stopped
+    volumes:
+      - ./rclone_config:/config/rclone
+      # Monta os volumes dos outros serviços como APENAS LEITURA :ro
+      - uptime_kuma_data:/data/uptime_kuma:ro
+      - forgejo_data:/data/forgejo:ro
+      - vaultwarden_data:/data/vaultwarden:ro
+      - portainer_data:/data/portainer:ro
+    entrypoint: /bin/sh
+    command: -c "while true; do rclone sync /data/ ${RCLONE_NAME}:Backups -v --log-file /dev/stdout; echo 'Backup finalizado. Aguardando ${BACKUP_SLEEP} segundos para o próximo'; sleep ${BACKUP_SLEEP}; done"
+
   cloudflare-tunnel:
     image: cloudflare/cloudflared:latest
     container_name: cloudflare-tunnel
