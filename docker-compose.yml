@@ -49,7 +49,7 @@ services:
     environment:
       DOMAIN: ${VW_DOMAIN}
     ports:
-      - "9001:9001"
+      - "9001:80"
     volumes:
       - vaultwarden_data:/data/
     networks:
